@@ -1,11 +1,14 @@
 {
-  "name": "Games — Neon Arcade",
-  "short_name": "Neon Arcade",
-  "description": "Free browser games that work offline after caching.",
+  "name": "Neon Football Arena — Built by Ivan Jokene",
+  "short_name": "Neon Football",
+  "description": "A free football arcade with penalty shootouts, target practice and football quizzes. Play offline after installation.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#080a12",
-  "theme_color": "#090b14",
-  "icons": []
+  "orientation": "portrait",
+  "background_color": "#080b13",
+  "theme_color": "#080b13",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
 }
