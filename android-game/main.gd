@@ -10,6 +10,8 @@ var player: CharacterBody3D
 var ball: RigidBody3D
 var camera_3d: Camera3D
 var opponent: CharacterBody3D
+var ai_players: Array[CharacterBody3D] = []
+var animation_clock := 0.0
 var hud_label: Label
 var touch_vector := Vector2.ZERO
 var action_pass := false
@@ -63,6 +65,10 @@ func _build_world() -> void:
 
 	player = _make_player("HomePlayer", Vector3(0, 0.1, 9), Color(0.05, 0.45, 1.0))
 	opponent = _make_player("Opponent", Vector3(0, 0.1, -5), Color(0.9, 0.08, 0.1))
+	ai_players.append(opponent)
+	ai_players.append(_make_player("BlueTeammate", Vector3(-6, 0.1, 5), Color(0.05, 0.45, 1.0)))
+	ai_players.append(_make_player("RedDefender", Vector3(6, 0.1, -10), Color(0.9, 0.08, 0.1)))
+	ai_players.append(_make_player("RedWing", Vector3(-7, 0.1, -3), Color(0.9, 0.08, 0.1)))
 	ball = RigidBody3D.new()
 	ball.name = "Football"
 	ball.position = Vector3(0.8, 0.55, 7.5)
@@ -154,6 +160,38 @@ func _make_player(label: String, pos: Vector3, kit_color: Color) -> CharacterBod
 	head.position.y = 1.93
 	head.material_override = skin
 	body.add_child(head)
+	# Simple arms make the procedural prototype read more clearly as a footballer.
+	for side in [-1.0, 1.0]:
+		var arm := MeshInstance3D.new()
+		var arm_mesh := CapsuleMesh.new()
+		arm_mesh.radius = 0.12
+		arm_mesh.height = 0.72
+		arm.mesh = arm_mesh
+		arm.position = Vector3(side * 0.48, 1.22, 0.02)
+		arm.rotation_degrees.z = side * -12.0
+		arm.material_override = kit
+		body.add_child(arm)
+	var hair := MeshInstance3D.new()
+	var hair_mesh := SphereMesh.new()
+	hair_mesh.radius = 0.275
+	hair_mesh.height = 0.25
+	hair.mesh = hair_mesh
+	hair.position = Vector3(0, 2.13, 0.015)
+	var hair_mat := StandardMaterial3D.new()
+	hair_mat.albedo_color = Color(0.055, 0.035, 0.02)
+	hair.material_override = hair_mat
+	body.add_child(hair)
+	for side in [-1.0, 1.0]:
+		var eye := MeshInstance3D.new()
+		var eye_mesh := SphereMesh.new()
+		eye_mesh.radius = 0.035
+		eye_mesh.height = 0.05
+		eye.mesh = eye_mesh
+		eye.position = Vector3(side * 0.09, 1.96, -0.235)
+		var eye_mat := StandardMaterial3D.new()
+		eye_mat.albedo_color = Color(0.025, 0.02, 0.015)
+		eye.material_override = eye_mat
+		body.add_child(eye)
 	var shorts := MeshInstance3D.new()
 	var shorts_mesh := BoxMesh.new()
 	shorts_mesh.size = Vector3(0.72, 0.34, 0.43)
@@ -170,6 +208,15 @@ func _make_player(label: String, pos: Vector3, kit_color: Color) -> CharacterBod
 		leg.position = Vector3(side * 0.2, 0.28, 0)
 		leg.material_override = shorts_mat
 		body.add_child(leg)
+		var boot := MeshInstance3D.new()
+		var boot_mesh := BoxMesh.new()
+		boot_mesh.size = Vector3(0.23, 0.12, 0.38)
+		boot.mesh = boot_mesh
+		boot.position = Vector3(side * 0.2, 0.07, -0.08)
+		var boot_mat := StandardMaterial3D.new()
+		boot_mat.albedo_color = Color(0.025, 0.025, 0.03)
+		boot.material_override = boot_mat
+		body.add_child(boot)
 	add_child(body)
 	return body
 
@@ -256,7 +303,7 @@ func _physics_process(delta: float) -> void:
 	player.velocity.x = input_dir.x * MOVE_SPEED
 	player.velocity.z = input_dir.y * MOVE_SPEED
 	if input_dir.length() > 0.05:
-		player.rotation.y = atan2(input_dir.x, input_dir.y)
+		player.rotation.y = atan2(input_dir.x, -input_dir.y)
 	player.velocity.y -= 22.0 * delta
 	player.move_and_slide()
 	player.position.x = clampf(player.position.x, -FIELD_WIDTH / 2.0 + 1.0, FIELD_WIDTH / 2.0 - 1.0)
