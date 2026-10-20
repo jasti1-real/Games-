@@ -10,12 +10,13 @@ This is the initial Godot 4 project for a FIFA-style camera football game intend
 - Keyboard controls for desktop testing
 - Touchscreen direction, pass, and shoot buttons
 - Ball physics and several simple AI teammates/opponents
-- More detailed procedural placeholder footballers with heads, hair, eyes, arms, shorts, legs, and boots
+- More detailed procedural placeholder footballers with heads, hair, eyes, nose, ears, arms, shorts, legs, and boots
+- Procedural arm and leg swing animations tied to player movement
 - FIFA-style follow camera
 - Basic score and match timer
 
 ## Important status
-This is an early playable prototype, not a finished commercial football game. The current players are still procedural placeholders with simple facial details, not realistic scanned faces or licensed professional-player likenesses. Realistic player models, rigging, running/kicking animations, better AI, match rules, sound, menus, and performance testing are later development tasks. Use original or properly licensed player assets.
+This is an early playable prototype, not a finished commercial football game. The current players are still procedural placeholders with simple facial details, not realistic scanned faces or licensed professional-player likenesses. Realistic player models and professional-grade rigging are still missing. The current procedural arm/leg swing is a simple prototype animation, not motion-captured football animation. Better AI, match rules, sound, menus, and performance testing remain development tasks. Use original or properly licensed player assets.
 
 ## Open in Godot
 1. Install Godot 4.x on a computer.
