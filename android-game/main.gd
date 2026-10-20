@@ -12,6 +12,7 @@ var camera_3d: Camera3D
 var opponent: CharacterBody3D
 var ai_players: Array[CharacterBody3D] = []
 var animation_clock := 0.0
+var animation_parts: Dictionary = {}
 var hud_label: Label
 var touch_vector := Vector2.ZERO
 var action_pass := false
@@ -160,17 +161,22 @@ func _make_player(label: String, pos: Vector3, kit_color: Color) -> CharacterBod
 	head.position.y = 1.93
 	head.material_override = skin
 	body.add_child(head)
-	# Simple arms make the procedural prototype read more clearly as a footballer.
+	# Shoulder pivots let the arms swing while the player runs.
+	var arm_pivots: Array[Node3D] = []
 	for side in [-1.0, 1.0]:
+		var arm_pivot := Node3D.new()
+		arm_pivot.position = Vector3(side * 0.4, 1.55, 0.02)
+		body.add_child(arm_pivot)
 		var arm := MeshInstance3D.new()
 		var arm_mesh := CapsuleMesh.new()
 		arm_mesh.radius = 0.12
 		arm_mesh.height = 0.72
 		arm.mesh = arm_mesh
-		arm.position = Vector3(side * 0.48, 1.22, 0.02)
+		arm.position = Vector3(side * 0.08, -0.28, 0.0)
 		arm.rotation_degrees.z = side * -12.0
 		arm.material_override = kit
-		body.add_child(arm)
+		arm_pivot.add_child(arm)
+		arm_pivots.append(arm_pivot)
 	var hair := MeshInstance3D.new()
 	var hair_mesh := SphereMesh.new()
 	hair_mesh.radius = 0.275
@@ -181,6 +187,33 @@ func _make_player(label: String, pos: Vector3, kit_color: Color) -> CharacterBod
 	hair_mat.albedo_color = Color(0.055, 0.035, 0.02)
 	hair.material_override = hair_mat
 	body.add_child(hair)
+	# Nose, ears and simple mouth give the prototype head more readable features.
+	var nose := MeshInstance3D.new()
+	var nose_mesh := SphereMesh.new()
+	nose_mesh.radius = 0.055
+	nose_mesh.height = 0.09
+	nose.mesh = nose_mesh
+	nose.position = Vector3(0, 1.91, -0.27)
+	nose.material_override = skin
+	body.add_child(nose)
+	for side in [-1.0, 1.0]:
+		var ear := MeshInstance3D.new()
+		var ear_mesh := SphereMesh.new()
+		ear_mesh.radius = 0.07
+		ear_mesh.height = 0.12
+		ear.mesh = ear_mesh
+		ear.position = Vector3(side * 0.25, 1.92, 0.0)
+		ear.material_override = skin
+		body.add_child(ear)
+	var mouth := MeshInstance3D.new()
+	var mouth_mesh := BoxMesh.new()
+	mouth_mesh.size = Vector3(0.12, 0.025, 0.025)
+	mouth.mesh = mouth_mesh
+	mouth.position = Vector3(0, 1.83, -0.25)
+	var mouth_mat := StandardMaterial3D.new()
+	mouth_mat.albedo_color = Color(0.12, 0.035, 0.025)
+	mouth.material_override = mouth_mat
+	body.add_child(mouth)
 	for side in [-1.0, 1.0]:
 		var eye := MeshInstance3D.new()
 		var eye_mesh := SphereMesh.new()
@@ -199,25 +232,33 @@ func _make_player(label: String, pos: Vector3, kit_color: Color) -> CharacterBod
 	shorts.position.y = 0.63
 	shorts.material_override = shorts_mat
 	body.add_child(shorts)
+	var leg_pivots: Array[Node3D] = []
 	for side in [-1.0, 1.0]:
+		var leg_pivot := Node3D.new()
+		leg_pivot.position = Vector3(side * 0.2, 0.55, 0)
+		body.add_child(leg_pivot)
 		var leg := MeshInstance3D.new()
 		var leg_mesh := CapsuleMesh.new()
 		leg_mesh.radius = 0.13
 		leg_mesh.height = 0.68
 		leg.mesh = leg_mesh
-		leg.position = Vector3(side * 0.2, 0.28, 0)
+		leg.position = Vector3(0, -0.28, 0)
 		leg.material_override = shorts_mat
-		body.add_child(leg)
+		leg_pivot.add_child(leg)
 		var boot := MeshInstance3D.new()
 		var boot_mesh := BoxMesh.new()
 		boot_mesh.size = Vector3(0.23, 0.12, 0.38)
 		boot.mesh = boot_mesh
-		boot.position = Vector3(side * 0.2, 0.07, -0.08)
+		boot.position = Vector3(0, -0.5, -0.08)
 		var boot_mat := StandardMaterial3D.new()
 		boot_mat.albedo_color = Color(0.025, 0.025, 0.03)
 		boot.material_override = boot_mat
-		body.add_child(boot)
+		leg_pivot.add_child(boot)
+		leg_pivots.append(leg_pivot)
 	add_child(body)
+	if label != "HomePlayer":
+		body.add_to_group("football_ai")
+	animation_parts[body.get_instance_id()] = {"legs": leg_pivots, "arms": arm_pivots}
 	return body
 
 func _build_ui() -> void:
@@ -288,6 +329,33 @@ func _add_action_button(parent: Control, caption: String, shooting: bool) -> voi
 		button.button_down.connect(func(): action_pass = true)
 		button.button_up.connect(func(): action_pass = false)
 	parent.add_child(button)
+
+func _process(delta: float) -> void:
+	animation_clock += delta
+	for body in [player, opponent]:
+		_animate_player(body)
+	for body in get_tree().get_nodes_in_group("football_ai"):
+		_animate_player(body)
+
+func _animate_player(body: Node) -> void:
+	if not is_instance_valid(body) or not body is CharacterBody3D:
+		return
+	var parts: Dictionary = animation_parts.get(body.get_instance_id(), {})
+	if parts.is_empty():
+		return
+	var velocity: Vector3 = body.velocity
+	var speed := Vector2(velocity.x, velocity.z).length()
+	var intensity := clampf(speed / MOVE_SPEED, 0.0, 1.0)
+	var phase := animation_clock * (7.5 + speed * 1.2)
+	var legs: Array = parts.get("legs", [])
+	var arms: Array = parts.get("arms", [])
+	for i in range(legs.size()):
+		legs[i].rotation.x = sin(phase + float(i) * PI) * 0.62 * intensity
+		legs[i].rotation.z = 0.0
+	for i in range(arms.size()):
+		arms[i].rotation.x = sin(phase + float(i) * PI + PI) * 0.28 * intensity
+		arms[i].rotation.z = 0.0
+	body.position.y = 0.1 + absf(sin(phase * 2.0)) * 0.06 * intensity
 
 func _physics_process(delta: float) -> void:
 	if player == null:
