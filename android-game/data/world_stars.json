@@ -1,0 +1,118 @@
+{
+  "game": "Neon Football Arena",
+  "branding": "Built by Ivan Jokene",
+  "roster_status": "selection_plan_only",
+  "note": "This roster is a development plan. It does not include real player face scans, official team kits, badges, or licensed likeness assets. Obtain appropriate permissions or use original fictional lookalikes before distributing a commercial game.",
+  "teams": [
+    {
+      "id": "world_stars",
+      "display_name": "World Stars XI",
+      "kit_color": "#13a8ff",
+      "players": [
+        {
+          "id": "messi",
+          "display_name": "Lionel Messi",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "ronaldo",
+          "display_name": "Cristiano Ronaldo",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "mbappe",
+          "display_name": "Kylian Mbappe",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "haaland",
+          "display_name": "Erling Haaland",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "salah",
+          "display_name": "Mohamed Salah",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "vinicius",
+          "display_name": "Vinicius Junior",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "bellingham",
+          "display_name": "Jude Bellingham",
+          "role": "Midfielder",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "de-bruyne",
+          "display_name": "Kevin De Bruyne",
+          "role": "Midfielder",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "modric",
+          "display_name": "Luka Modric",
+          "role": "Midfielder",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "mane",
+          "display_name": "Sadio Mane",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "son",
+          "display_name": "Son Heung-min",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        },
+        {
+          "id": "neymar",
+          "display_name": "Neymar Jr",
+          "role": "Forward",
+          "asset_status": "model_needed"
+        }
+      ]
+    },
+    {
+      "id": "challengers",
+      "display_name": "Neon Challengers",
+      "kit_color": "#f22645",
+      "players": [
+        {
+          "id": "keeper",
+          "display_name": "Challenge Keeper",
+          "role": "Goalkeeper",
+          "asset_status": "prototype_placeholder"
+        },
+        {
+          "id": "defender-1",
+          "display_name": "Challenge Defender 1",
+          "role": "Defender",
+          "asset_status": "prototype_placeholder"
+        },
+        {
+          "id": "midfielder-1",
+          "display_name": "Challenge Midfielder 1",
+          "role": "Midfielder",
+          "asset_status": "prototype_placeholder"
+        },
+        {
+          "id": "forward-1",
+          "display_name": "Challenge Forward 1",
+          "role": "Forward",
+          "asset_status": "prototype_placeholder"
+        }
+      ]
+    }
+  ]
+}
