@@ -225,7 +225,9 @@ func _add_hold_button(parent: Control, caption: String, direction: Vector2) -> v
 	button.text = caption
 	button.custom_minimum_size = Vector2(58, 62)
 	button.button_down.connect(func(): touch_vector = direction)
-	button.button_up.connect(func(): if touch_vector == direction: touch_vector = Vector2.ZERO)
+	button.button_up.connect(func():
+		if touch_vector == direction:
+			touch_vector = Vector2.ZERO)
 	parent.add_child(button)
 
 func _add_action_button(parent: Control, caption: String, shooting: bool) -> void:
